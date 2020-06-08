@@ -11,17 +11,17 @@ const originalSetRoot = Navigation.setRoot.bind(Navigation);
 const originalSetStackRoot = Navigation.setStackRoot.bind(Navigation);
 const originalPush = Navigation.push.bind(Navigation);
 
-Navigation.setRoot = async (layout) => {	
+Navigation.setRoot = async (layout) => {
   injectNavigator(layout);
   originalSetRoot(layout);
 }
 
-Navigation.push = async (componentId, layout) => {	
+Navigation.push = async (componentId, layout) => {
   injectNavigator(layout);
   originalPush(componentId, layout);
 }
 
-Navigation.setStackRoot = async (componentId, layout) => {	
+Navigation.setStackRoot = async (componentId, layout) => {
   injectNavigator(layout);
   originalSetStackRoot(componentId, layout);
 }
@@ -164,8 +164,8 @@ export function generateNavigator(componentId) {
       const options = tab ? {
         currentTabIndex: tab.tabIndex
       } : {
-          currentTabId: this.id
-        };
+        currentTabId: this.id
+      };
 
       Navigation.mergeOptions(this.id, {
         bottomTabs: options
@@ -252,4 +252,4 @@ function injectNavigator(layout) {
   function isObject(value) {
     return Array.isArray(value) || (value && typeof value === 'object' && value.constructor === Object);
   }
-} 
+}

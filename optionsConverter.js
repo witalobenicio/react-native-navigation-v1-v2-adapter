@@ -40,7 +40,8 @@ export function convertStyle(style = {}, buttons) {
       },
       backButton: {
         image: style.backButtonImage,
-        hideTitle: style.hideBackButtonTitle
+        showTitle: !style.hideBackButtonTitle,
+        color: style.navBarButtonColor,
       },
       backButtonImage: style.backButtonImage,
       hideBackButtonTitle: style.hideBackButtonTitle,
