@@ -30,6 +30,7 @@ export function convertStyle(style = {}, buttons) {
     rootBackgroundImage: style.rootBackgroundImageName,
     modalPresentationStyle: style.modalPresentationStyle,
     topBar: {
+      elevation: style.topBarElevationShadowEnabled ? 5 : 0,
       visible: style.navBarHidden ? !style.navBarHidden : undefined,
       hideOnScroll: style.navBarHideOnScroll,
       buttonColor: style.navBarButtonColor,
@@ -93,7 +94,7 @@ export function convertStyle(style = {}, buttons) {
         if (style.titleDisplayMode) return style.titleDisplayMode;
         if (style.forceTitlesDisplay === true) return 'alwaysShow';
         if (style.forceTitlesDisplay === false) return 'alwaysHide';
-        if (style.forceTitlesDisplay === undefined) return 'showWhenActive';
+        return undefined;
       })(),
     }
   };

@@ -114,7 +114,7 @@ export function generateNavigator(componentId) {
       if (buttons.rightButtons || buttons.leftButtons || buttons.fab) {
         Navigation.mergeOptions(this.id, {
           topBar: {
-            ...optionsConverter.convertButtons(buttons, params.navBarButtonColor)
+            ...optionsConverter.convertButtons(buttons)
           }
         });
       }
@@ -181,8 +181,10 @@ export function generateNavigator(componentId) {
       });
     },
     setStyle(style) {
-      const convertedStyle = optionsConverter.convertStyle(style);
-      Navigation.mergeOptions(this.id, convertedStyle);
+      if (style && Object.keys(style).length) {
+        const convertedStyle = optionsConverter.convertStyle(style);
+        Navigation.mergeOptions(this.id, convertedStyle);
+      }
     },
     screenIsCurrentlyVisible() {
       return this.isVisible;
