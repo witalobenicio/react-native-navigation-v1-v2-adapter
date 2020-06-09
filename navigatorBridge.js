@@ -3,6 +3,7 @@ import * as layoutConverter from './layoutConverter';
 import * as optionsConverter from './optionsConverter';
 import {generateGuid} from './utils';
 import {BackHandler} from 'react-native';
+import { node } from 'prop-types';
 
 const modalsPresented = [];
 const originalShowModal = Navigation.showModal.bind(Navigation);
@@ -113,7 +114,7 @@ export function generateNavigator(componentId) {
       if (buttons.rightButtons || buttons.leftButtons || buttons.fab) {
         Navigation.mergeOptions(this.id, {
           topBar: {
-            ...optionsConverter.convertButtons(buttons)
+            ...optionsConverter.convertButtons(buttons, params.navBarButtonColor)
           }
         });
       }
@@ -180,7 +181,8 @@ export function generateNavigator(componentId) {
       });
     },
     setStyle(style) {
-      Navigation.mergeOptions(this.id, optionsConverter.convertStyle(style));
+      const convertedStyle = optionsConverter.convertStyle(style);
+      Navigation.mergeOptions(this.id, convertedStyle);
     },
     screenIsCurrentlyVisible() {
       return this.isVisible;
@@ -201,14 +203,65 @@ export function generateNavigator(componentId) {
   return navigator;
 }
 
+function getPushAndPopAnimations(method, params) {
+  if ((method === 'push' || method === 'pop')
+    && params && params.animationType) {
+    const animation = (() => {
+      if (params.animationType === 'none') return { enabled: false };
+      const anim = (() => {
+        if (params.animationType === 'fade') {
+          return {
+            enabled: true,
+            content: {
+              alpha: {
+                from: 0,
+                to: 1,
+                duration: 300,
+              }
+            }
+          }
+        }
+        return {};
+      })();
+      return anim;
+    })();
+    params.animations = {
+      [method]: animation,
+      [method === 'push' ? 'pop' : 'push']: animation,
+    }
+  }
+}
+
+function getShowAndDismissModalAnimations(method, params) {
+  if ((method === 'showModal' || method === 'dismissModal')
+    && params && params.animationType) {
+    const animation = (() => {
+      if (params.animationType === 'none') return { enabled: false };
+      const anim = (() => {
+        if (params.animationType === 'fade') {
+          return {
+            enabled: true,
+            alpha: {
+              from: 0,
+              to: 1,
+              duration: 300,
+            }
+          }
+        }
+        return {};
+      })();
+      return anim;
+    })();
+    params.animations = {
+      [method]: animation,
+    }
+  }
+}
+
 function mergeAnimationType(method, params) {
-  if (params) {
-    const animations = {
-      [method]: {
-        enable: params.animationType === 'none' ? false : true
-      }
-    };
-    params.animations = {...params.animations, ...animations};
+  if (params && params.animationType) {
+    getPushAndPopAnimations(method, params);
+    getShowAndDismissModalAnimations(method, params);
   }
 }
 

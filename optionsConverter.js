@@ -6,13 +6,16 @@ import _ from 'lodash';
 export function convertStyle(style = {}, buttons) {
   style = {...style, ...style.navigatorStyle}
   if (style.navigatorButtons) {
-    buttons = convertButtons(style.navigatorButtons);
+    buttons = convertButtons(style.navigatorButtons, style.navBarButtonColor);
   } else if (buttons) {
-    buttons = convertButtons(buttons);
+    buttons = convertButtons(buttons, style.navBarButtonColor);
   }
 
   const convertedStyle = {
-    screenBackgroundColor: style.screenBackgroundColor,
+    layout: {
+      backgroundColor: style.screenBackgroundColor,
+      componentBackgroundColor: style.screenBackgroundColor,
+    },
     orientation: style.orientation,
     statusBar: {
       blur: style.statusBarBlur,
@@ -38,14 +41,14 @@ export function convertStyle(style = {}, buttons) {
       largeTitle: {
         visible: style.largeTitle
       },
+      backButtonImage: style.backButtonImage,
+      hideBackButtonTitle: style.hideBackButtonTitle,
+      ...buttons,
       backButton: {
         image: style.backButtonImage,
         showTitle: !style.hideBackButtonTitle,
         color: style.navBarButtonColor,
       },
-      backButtonImage: style.backButtonImage,
-      hideBackButtonTitle: style.hideBackButtonTitle,
-      ...buttons,
       title: {
         text: style.title,
         fontSize: style.navBarTextFontSize,
@@ -85,7 +88,13 @@ export function convertStyle(style = {}, buttons) {
     },
     bottomTabs: {
       visible: style.tabBarHidden ? !style.tabBarHidden : undefined,
-      drawBehind: style.drawUnderTabBar
+      drawBehind: style.drawUnderTabBar,
+      titleDisplayMode: (() => {
+        if (style.titleDisplayMode) return style.titleDisplayMode;
+        if (style.forceTitlesDisplay === true) return 'alwaysShow';
+        if (style.forceTitlesDisplay === false) return 'alwaysHide';
+        if (style.forceTitlesDisplay === undefined) return 'showWhenActive';
+      })(),
     }
   };
   deleteUndefinedProperies(convertedStyle);
@@ -114,13 +123,13 @@ function deleteEmptyObjects(parentObject, key) {
   }
 }
 
-export function convertButtons(buttons) {
+export function convertButtons(buttons, color) {
   const converted = {};
   if (buttons.leftButtons) {
-    converted.leftButtons = processButtonsArray(buttons.leftButtons, 'leftButtons');
+    converted.leftButtons = processButtonsArray(buttons.leftButtons, 'leftButtons', color);
   }
   if (buttons.rightButtons) {
-    converted.rightButtons = processButtonsArray(buttons.rightButtons, 'rightButtons');
+    converted.rightButtons = processButtonsArray(buttons.rightButtons, 'rightButtons', color);
   }
   if (buttons.fab) {
     converted.fab = processFab(buttons.fab)
@@ -128,7 +137,7 @@ export function convertButtons(buttons) {
   return converted;
 }
 
-function processButtonsArray(buttons, type) {
+function processButtonsArray(buttons, type, color) {
   return buttons.map((button) => {
     if (typeof button.component === 'string') {
       button.component = {
