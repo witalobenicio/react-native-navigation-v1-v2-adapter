@@ -3,8 +3,8 @@ import {Platform} from 'react-native';
 import {Navigation} from 'react-native-navigation';
 import _ from 'lodash';
 
-export function convertStyle(style = {}, buttons) {
-  style = {...style, ...style.navigatorStyle}
+export function convertStyle(paramStyle = {}, buttons) {
+  const style = {...paramStyle, ...paramStyle.navigatorStyle}
   if (style.navigatorButtons) {
     buttons = convertButtons(style.navigatorButtons, style.navBarButtonColor);
   } else if (buttons) {
@@ -47,7 +47,11 @@ export function convertStyle(style = {}, buttons) {
       ...buttons,
       backButton: {
         image: style.backButtonImage,
-        showTitle: !style.hideBackButtonTitle,
+        showTitle: (() => {
+          if (style.hideBackButtonTitle) return false;
+          if (style.hideBackButtonTitle === false) return true;
+          return undefined;
+        })(),
         color: style.navBarButtonColor,
       },
       title: {
@@ -98,6 +102,7 @@ export function convertStyle(style = {}, buttons) {
       })(),
     }
   };
+  console.log('CONVERTED STYLE', convertedStyle, style);
   deleteUndefinedProperies(convertedStyle);
   deleteEmptyObjects(convertedStyle);
 
