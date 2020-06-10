@@ -54,6 +54,8 @@ export function convertStyle(paramStyle = {}, buttons) {
         })(),
         color: style.navBarButtonColor,
       },
+      leftButtonColor: style.navBarButtonColor,
+      rightButtonColor: style.navBarButtonColor,
       title: {
         text: style.title,
         fontSize: style.navBarTextFontSize,
