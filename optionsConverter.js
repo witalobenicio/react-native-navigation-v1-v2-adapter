@@ -95,6 +95,7 @@ export function convertStyle(paramStyle = {}, buttons) {
     },
     bottomTabs: {
       visible: style.tabBarHidden ? !style.tabBarHidden : undefined,
+      backgroundColor: style.tabBarBackgroundColor,
       drawBehind: style.drawUnderTabBar,
       titleDisplayMode: (() => {
         if (style.titleDisplayMode) return style.titleDisplayMode;
